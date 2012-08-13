@@ -2,9 +2,9 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://FundingGates.github.com/techblog
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
+url: http://techblog.fundinggates.com
+title: Funding Gates Tech Blog
+subtitle:
 author: Your Name
 simple_search: http://google.com/search
 description:
@@ -26,7 +26,7 @@ email:
 # ----------------------- #
 
 # If publishing to a subdirectory as in http://site.com/project set 'root: /project'
-root: /techblog
+root: /
 permalink: /blog/:year/:month/:day/:title/
 source: source
 destination: public/techblog
