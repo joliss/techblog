@@ -10,6 +10,13 @@
 
     bundle
 
+Then run:
+
+    rake setup_github_pages
+
+(otherwise you will get an error like "The following paths are ignored by one
+of your .gitignore files: _deploy" on deployment. )
+
 ### Style and Markup Guidelines
 
 Following the [Rails API Documentation
