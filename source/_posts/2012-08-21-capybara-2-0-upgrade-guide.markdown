@@ -85,7 +85,7 @@ click_on 'ambiguous' # old
 first(:link, 'ambiguous').click # new
 ```
 
-## data-method not respected by default
+## "data-method" Not Respected by Default
 
 The RackTest driver - that's the fast default driver, when you're not using
 `js: true` - no longer respects Rails's `data-method` attribute unless you
@@ -157,3 +157,9 @@ open an issue in the
 Jonas and I are monitoring both.
 
 Even better, send a pull request! We'll love you for it.
+
+-------------------
+
+**P.S.** This is the brand new Funding Gates tech blog. We'll be posting more
+cool stuff. Be sure to subscribe to our
+[feed](http://techblog.fundinggates.com/atom.xml)!
