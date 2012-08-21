@@ -12,7 +12,9 @@
 
 Then run:
 
-    rake setup_github_pages
+    $ rake setup_github_pages
+    Repository url: git@github.com:FundingGates/techblog.git
+    $ git checkout _config.yml # discard changes
 
 (otherwise you will get an error like "The following paths are ignored by one
 of your .gitignore files: _deploy" on deployment. )
@@ -36,10 +38,6 @@ Short-short version:
 ### Deploying
 
 Site is deployed to Github pages. Simply run:
-
-    rake deploy
-
-If the site doesn't update correctly, run:
 
     rake gen_deploy
 
