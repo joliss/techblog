@@ -28,9 +28,8 @@ Third-party drivers like
 compatible with Capybara 2.0. Use the default `:selenium` driver in the
 meantime.
 
-Also, Capybara 2.0 might drop Ruby 1.8.7 compatibility. If that's a problem
-for you, and you're willing to help make it compatible,
-[chime in](https://groups.google.com/d/topic/ruby-capybara/hjnT4aYMi4I/discussion).
+Also, Capybara 2.0 will likely
+[drop Ruby 1.8.7 compatibility](https://groups.google.com/d/msg/ruby-capybara/hjnT4aYMi4I/PsY-D_bXJhEJ).
 
 ## How to Upgrade
 
@@ -160,6 +159,6 @@ Even better, send a pull request! We'll love you for it.
 
 -------------------
 
-**P.S.** This is the brand new Funding Gates tech blog. We'll be posting more
-cool stuff. Be sure to subscribe to our
+**P.S.** This is the brand new community blog by the developer team at Funding
+Gates. We'll be posting more cool stuff. Be sure to subscribe to our
 [feed](http://techblog.fundinggates.com/atom.xml)!
