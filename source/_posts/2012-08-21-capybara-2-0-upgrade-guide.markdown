@@ -144,3 +144,16 @@ These won't break your code when you upgrade, but they're sweet new additions:
   for a list.
 
 * `has_content?` accepts regexes.
+
+## Problems?
+
+Any speed bumps I forgot to mention? Leave a comment.
+
+If you need help with problems, ask away on the
+[mailing list](http://groups.google.com/group/ruby-capybara)!
+To report reproducible bugs or suggest changes in Capybara,
+open an issue in the
+[issue tracker](https://github.com/jnicklas/capybara/issues).
+Jonas and I are monitoring both.
+
+Even better, send a pull request! We'll love you for it.
