@@ -1,12 +1,10 @@
 ---
 layout: post
 title: "Capybara 2.0 Upgrade Guide"
-date: 2012-08-21 00:19
+date: 2012-08-22 00:19
 comments: true
 categories:
 ---
-
-**This is a draft. Please don't link it on Twitter and friends.**
 
 *by [Jo Liss](http://www.solitr.com/blog/) (follow [@jo_liss](https://twitter.com/jo_liss))*
 
