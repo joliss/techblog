@@ -6,9 +6,13 @@ comments: true
 categories:
 ---
 
+<div style="float: right;">
+  <a href="http://willnet.in/24">日本語版</a>
+</div>
+
 *by [Jo Liss](http://www.solitr.com/blog/) (follow [@jo_liss](https://twitter.com/jo_liss))*
 
-The Capybara 2.0.0 beta is out. I'll walk you through most important changes,
+The Capybara 2.0.0 beta is out. I'll walk you through the most important changes,
 and show you how to upgrade.
 
 The bad news: If you upgrade to Capybara 2.0.0, you may have to make some
