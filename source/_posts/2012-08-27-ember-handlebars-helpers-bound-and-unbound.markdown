@@ -21,11 +21,12 @@ Let's say you want to write an i18n helper (which you really shouldn't, since
 there is [ember-i18n](https://github.com/zendesk/ember-i18n)), so that `{{t
 helloWorld}}` produces "Hello World!".
 
-```coffeescript
-Ember.STRINGS['helloWorld'] = 'Hello World!'
+```javascript
+Ember.STRINGS['helloWorld'] = 'Hello World!';
 
-Ember.Handlebars.registerHelper 't', (i18nKey, options) ->
-  return Ember.String.loc(i18nKey)
+Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
+  return Ember.String.loc(i18nKey);
+});
 ```
 
 Let's dissect this: `registerHelper` takes two arguments: the name of the
@@ -64,36 +65,39 @@ observers manually, you are in for a lot of
 Luckily, there is a cool trick: **Instantiate a view by deferring to the
 `{{view}}` helper.**
 
-```coffeescript
-# Register a handlebars helper with an internal view
-# implementation. The view will have its `content`
-# property bound to the first argument (if any).
-App.registerViewHelper = (name, view) ->
-  Ember.Handlebars.registerHelper name, (args..., options) ->
-    if (property = args[0])?
-      options.hash.contentBinding = property
-    return Ember.Handlebars.helpers.view.call(this, view, options)
+```javascript
+// Register a handlebars helper with an internal view
+// implementation. The view will have its `content`
+// property bound to the helper argument.
+App.registerViewHelper = function(name, view) {
+  return Ember.Handlebars.registerHelper(name, function(property, options) {
+    options.hash.contentBinding = property;
+    return Ember.Handlebars.helpers.view.call(this, view, options);
+  });
+};
 
-# For example, let's implement a {{capitalize}} helper:
-App.registerViewHelper 'capitalize', Ember.View.extend
-  tagName: 'span'
+// For example, let's implement a {{capitalize}} helper:
+App.registerViewHelper('capitalize', Ember.View.extend({
+  tagName: 'span',
 
-  template: Ember.Handlebars.compile '''
-    {{view.formattedContent}}
-    '''
+  template: Ember.Handlebars.compile('{{view.formattedContent}}'),
 
-  formattedContent: (->
-    if (content = @get('content'))?
-      content.charAt(0).toUpperCase() + content.slice(1)
-  ).property('content')
+  formattedContent: (function() {
+    var content = this.get('content');
+
+    if (content != null) {
+      return content.charAt(0).toUpperCase() + content.slice(1);
+    }
+  }).property('content')
+}));
 ```
 
 If `{{name}}` is "whizboo", then `{{capitalize name}}` is "Whizboo", and it
 will stay up-to-date as the name changes.
 
 This is in fact a really useful general-purpose technique for creating bound
-helpers. You can also pass options (`fooBinding="someProperty"`), which will be
-set on the view.
+helpers. You can even pass options (`fooBinding="someProperty"`), which will
+be set on the view.
 
 ### DRYing Further
 
@@ -101,23 +105,26 @@ If you write more helpers like the one above, you'll find that many can be
 expressed as a unary function of the `content` argument. I like to have a
 helper function to DRY up these kinds of helpers:
 
-```coffeescript
-# Return a view that formats `content` through the function `fn`.
-inlineFormatter = (fn) ->
-  Ember.View.extend
-    tagName: 'span'
+```javascript
+// Return a view that formats `content` through the function `fn`.
+inlineFormatter = function(fn) {
+  return Ember.View.extend({
+    tagName: 'span',
 
-    template: Ember.Handlebars.compile '''
-      {{view.formattedContent}}
-      '''
+    template: Ember.Handlebars.compile('{{view.formattedContent}}'),
 
-    formattedContent: (->
-      fn(@get('content')) if @get('content')?
-    ).property('content')
+    formattedContent: (function() {
+      if (this.get('content') != null) {
+        return fn(this.get('content'));
+      }
+    }).property('content')
+  });
+};
 
-# Now, for example, register a {{capitalize}} helper like this:
-App.registerViewHelper 'capitalize', inlineFormatter (content) ->
-  content.charAt(0).toUpperCase() + content.slice(1)
+// Now, for example, register a {{capitalize}} helper like this:
+App.registerViewHelper('capitalize', inlineFormatter(function(content) {
+  return content.charAt(0).toUpperCase() + content.slice(1);
+}));
 ```
 
 ---------------------
