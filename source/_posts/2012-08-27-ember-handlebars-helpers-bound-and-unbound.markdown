@@ -10,15 +10,15 @@ categories:
 
 Ember has a number of [built-in Handlebars
 helpers](http://docs.edge.emberjs.com/symbols/Handlebars.helpers.html), like
-`{{view}}`, `{{#if}}`, or `{{action}}`.
+`{{"{{"}}view}}`, `{{"{{"}}#if}}`, or `{{"{{"}}action}}`.
 
-You can also define your own helpers to DRY up your templates. Let's see how
-to do this, and then how to deal with bindings.
+You can also define your own helpers to DRY up your templates. I'll explain
+how to do this, and then how to deal with bindings.
 
-## Basics: Registering Helpers (Without Binding)
+## Unbound Helpers
 
 Let's say you want to write an i18n helper (which you really shouldn't, since
-there is [ember-i18n](https://github.com/zendesk/ember-i18n)), so that `{{t
+there is [ember-i18n](https://github.com/zendesk/ember-i18n)), so that `{{"{{"}}t
 helloWorld}}` produces "Hello World!".
 
 ```javascript
@@ -34,7 +34,7 @@ helper, and the helper function. The helper function takes the argument
 (`i18nKey`) and an `options` hash. It returns a string, which will be safely
 HTML-escaped by Ember.
 
-To have your helper take optional arguments (e.g. `{{t greeting World}}`),
+To have your helper take optional arguments (e.g. `{{"{{"}}t greeting World}}`),
 CoffeeScript splats are very useful:
 
 ```coffeescript
@@ -43,57 +43,60 @@ Ember.Handlebars.registerHelper 't', (i18nKey, args..., options) ->
 ```
 
 Helper options can be accessed through `options.hash`, e.g.
-`options.hash.lang` for
-
-```plain
-{{t greeting lang="en"}}
-```
+`options.hash.lang` for `{{"{{"}}t greeting lang="en"}}`.
 
 ## Bound Helpers
 
-If you find yourself writing `get` in a helper, something is going wrong.
-Using `get` assumes that the data you are getting is available before the
-helper is run. Even if it happens to work now, relying on this ordering
-invites a slew of issues - exactly the kind that Ember was designed to
-prevent. Instead, you need *bound helpers*.
+If you find yourself writing `get` in a helper function without some sort of
+binding, something is going wrong. Using `get` assumes that the data you are
+get'ting is available before the helper is run. Even if it happens to work now,
+relying on this ordering invites a slew of issues -- exactly the kind that
+Ember was designed to prevent. Instead, you need *bound helpers*.
 
 Unfortunately, there is no canonical way to create bound helpers yet
 ([#1274](https://github.com/emberjs/ember.js/pull/1274)). If you try to set up
 observers manually, you are in for a lot of
 [complexity](https://github.com/zendesk/ember-i18n/blob/8c5e518f59bf888f8c0477eafc57e7f73b383ada/lib/i18n.coffee#L90).
 
-Luckily, there is a cool trick: **Instantiate a view by deferring to the
-`{{view}}` helper.**
+Luckily, there is a cool trick: **Instantiate a view from the helper function
+by deferring to the `{{"{{"}}view}}` helper.**
+
+Here is a generic helper function that I use to create helpers that defer to
+views:
 
 ```javascript
-// Register a handlebars helper with an internal view
-// implementation. The view will have its `content`
-// property bound to the helper argument.
+// Register a handlebars helper that instantiates `view`.
+// The view will have its `content` property bound to the
+// helper argument.
 App.registerViewHelper = function(name, view) {
   return Ember.Handlebars.registerHelper(name, function(property, options) {
     options.hash.contentBinding = property;
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
 };
+```
 
-// For example, let's implement a {{capitalize}} helper:
+For example, let's implement a `{{"{{"}}capitalize}}` helper, so that  if
+`{{"{{"}}name}}` is "whizboo", then `{{"{{"}}capitalize name}}` is "Whizboo",
+and it will stay up-to-date as the name changes.
+
+```plain
 App.registerViewHelper('capitalize', Ember.View.extend({
   tagName: 'span',
 
-  template: Ember.Handlebars.compile('{{view.formattedContent}}'),
+  template: Ember.Handlebars.compile('{{"{{"}}view.formattedContent}}'),
 
   formattedContent: (function() {
     var content = this.get('content');
 
     if (content != null) {
+      // Capitalize `content`.
       return content.charAt(0).toUpperCase() + content.slice(1);
     }
   }).property('content')
 }));
 ```
 
-If `{{name}}` is "whizboo", then `{{capitalize name}}` is "Whizboo", and it
-will stay up-to-date as the name changes.
 
 This is in fact a really useful general-purpose technique for creating bound
 helpers. You can even pass options (`fooBinding="someProperty"`), which will
@@ -105,13 +108,13 @@ If you write more helpers like the one above, you'll find that many can be
 expressed as a unary function of the `content` argument. I like to have a
 helper function to DRY up these kinds of helpers:
 
-```javascript
+```plain
 // Return a view that formats `content` through the function `fn`.
 inlineFormatter = function(fn) {
   return Ember.View.extend({
     tagName: 'span',
 
-    template: Ember.Handlebars.compile('{{view.formattedContent}}'),
+    template: Ember.Handlebars.compile('{{"{{"}}view.formattedContent}}'),
 
     formattedContent: (function() {
       if (this.get('content') != null) {
@@ -120,8 +123,11 @@ inlineFormatter = function(fn) {
     }).property('content')
   });
 };
+```
 
-// Now, for example, register a {{capitalize}} helper like this:
+Now, for example, register a `{{"{{"}}capitalize}}` helper like this:
+
+```javascript
 App.registerViewHelper('capitalize', inlineFormatter(function(content) {
   return content.charAt(0).toUpperCase() + content.slice(1);
 }));
