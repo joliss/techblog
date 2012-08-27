@@ -65,7 +65,7 @@ Here is a generic helper function that I use to create helpers that defer to
 views:
 
 ```javascript
-// Register a handlebars helper that instantiates `view`.
+// Register a Handlebars helper that instantiates `view`.
 // The view will have its `content` property bound to the
 // helper argument.
 App.registerViewHelper = function(name, view) {
