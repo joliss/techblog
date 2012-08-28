@@ -69,7 +69,7 @@ views:
 // The view will have its `content` property bound to the
 // helper argument.
 App.registerViewHelper = function(name, view) {
-  return Ember.Handlebars.registerHelper(name, function(property, options) {
+  Ember.Handlebars.registerHelper(name, function(property, options) {
     options.hash.contentBinding = property;
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
