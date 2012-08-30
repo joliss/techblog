@@ -55,7 +55,7 @@ Ember was designed to prevent. Instead, you need *bound helpers*.
 
 Unfortunately, there is no canonical way to create bound helpers yet
 ([#1274](https://github.com/emberjs/ember.js/pull/1274)). If you try to set up
-observers manually, you are in for a lot of
+observers manually, you are in for a [lot](https://gist.github.com/2018185) of
 [complexity](https://github.com/zendesk/ember-i18n/blob/8c5e518f59bf888f8c0477eafc57e7f73b383ada/lib/i18n.coffee#L90).
 
 Luckily, there is a cool trick: **Instantiate a view from the helper function
