@@ -50,32 +50,13 @@ data-method, and ambiguous matches. Let's get to them one by one.
 
 ## "data-method" Not Respected by Default
 
-The RackTest driver -- that's the fast default driver, when you're not using
+<del>The RackTest driver -- that's the fast default driver, when you're not using
 `js: true` -- no longer respects Rails's `data-method` attribute unless you
-tell it to.
+tell it to.</del>
 
-For example, say you have the following link in a view:
-
-```haml
-= link_to "Delete", article_path(@article), method: :delete
-```
-
-In Capybara 1.1.2, `click_on 'Delete'` would work magically, even though it
-technically requires JavaScript. In Capybara 2.0.0, I recommend you get the
-magic behavior back by enabling `:respect_data_method`:
-
-```ruby spec/support/capybara.rb
-require 'capybara/rails'
-require 'capybara/rspec'
-
-# Override default rack_test driver to respect data-method attributes.
-Capybara.register_driver :rack_test do |app|
-  Capybara::RackTest::Driver.new(app, :respect_data_method => true)
-end
-```
-
-My personal hope is that this will be no longer necessary by the time we hit
-the 2.0.0 release ([#793](https://github.com/jnicklas/capybara/pull/793)).
+**Update Aug 30, 2012:** Good news: The behavior matches Capybara 1.1.2 again
+([#793](https://github.com/jnicklas/capybara/pull/793)), so long as you have
+`require 'capybara/rails'` (like you should in any case).
 
 ## Ambiguous Matches
 
@@ -139,7 +120,9 @@ You can assume that these don't affect you unless something breaks:
   [poll repeatedly](https://github.com/jnicklas/capybara#asynchronous-javascript-ajax-and-friends)
   until the condition is true. If that doesn't work for you, you could
   implement your own simple `wait_for` helper method (see e.g.
-  [this gist](https://gist.github.com/10c41024510ee9f235e0)).
+  [this gist](https://gist.github.com/10c41024510ee9f235e0)). See also
+  [this thread](https://groups.google.com/d/topic/ruby-capybara/qQYWpQb9FzY/discussion)
+  about `wait_until` going away.
 
 * The `find(:my_id)` symbol syntax
   [might go away](https://github.com/jnicklas/capybara/issues/783). In new code,
