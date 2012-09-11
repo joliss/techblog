@@ -35,28 +35,23 @@ Also, Capybara 2.0 will likely
 
 ## How to Upgrade
 
-The latest 2.0.0 beta release is about a month old. I recommend you use
-Capybara master, since it has some fixes, and is generally in better shape
-than the beta:
+The latest 2.0.0 beta release is two months old. I recommend you use Capybara
+master, since it has some fixes, and is generally in better shape than the
+beta:
 
 ```ruby Gemfile
 group :test do
-  gem 'capybara', git: 'https://github.com/jnicklas/capybara'
+  gem 'capybara', git: 'https://github.com/jnicklas/capybara', ref: '7fa75e55420e'
 end
 ```
 
-There are two things that will likely cause breakage in your test suite:
-data-method, and ambiguous matches. Let's get to them one by one.
+**Update:** Capybara master is having some changes that still need to be
+synchronized with rspec-rails
+([#809](https://github.com/jnicklas/capybara/issues/809)). If you are using
+RSpec, specify the `ref:` as above in the meantime.
 
-## "data-method" Not Respected by Default
-
-<del>The RackTest driver -- that's the fast default driver, when you're not using
-`js: true` -- no longer respects Rails's `data-method` attribute unless you
-tell it to.</del>
-
-**Update Aug 30, 2012:** Good news: The behavior matches Capybara 1.1.2 again
-([#793](https://github.com/jnicklas/capybara/pull/793)), so long as you have
-`require 'capybara/rails'` (like you should in any case).
+There is one major change that will likely cause breakage in your test suite,
+and that is how Capybara handles ambiguous matches:
 
 ## Ambiguous Matches
 
@@ -102,6 +97,17 @@ first(:link, 'ambiguous').click # new
 
 You can assume that these don't affect you unless something breaks:
 
+* <del>The RackTest driver -- that's the fast default driver, when you're not
+  using `js: true` -- no longer respects Rails's `data-method` attribute
+  unless you tell it to.</del>
+  Update: The behavior matches Capybara 1.1.2 again
+  ([#793](https://github.com/jnicklas/capybara/pull/793)), so long as you have
+  `require 'capybara/rails'` (like you should in any case).
+
+* The `find(:my_id)` symbol syntax is no longer supported
+  ([#783](https://github.com/jnicklas/capybara/issues/783)). Write
+  `find('#my_id')` instead, as recommended in the documentation.
+
 * `has_content?` checks for substrings in `text`, rather than using XPath
   `contains(...)` expressions. This means improved whitespace normalization,
   and suppression of invisible elements, like `head`, `script`, etc.
@@ -123,10 +129,6 @@ You can assume that these don't affect you unless something breaks:
   [this gist](https://gist.github.com/10c41024510ee9f235e0)). See also
   [this thread](https://groups.google.com/d/topic/ruby-capybara/qQYWpQb9FzY/discussion)
   about `wait_until` going away.
-
-* The `find(:my_id)` symbol syntax
-  [might go away](https://github.com/jnicklas/capybara/issues/783). In new code,
-  prefer `find('#my_id')`, as recommended in the documentation.
 
 ## Goodies
 
