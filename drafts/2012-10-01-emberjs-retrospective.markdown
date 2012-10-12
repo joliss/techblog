@@ -16,8 +16,8 @@ For greenfield apps, Ember is awesome. It manages complexity much better than
 smaller frameworks like Backbone. Thanks to Ember, we've been able to grow a
 lot of client-side logic without ending up with spaghetti code.
 
-**I've used Ember for small side-projects. What issues will I encounter in a
-larger project?**
+**I've used Ember for small side-projects. What issues will I encounter as I
+move to a larger project?**
 
 You likely won't get away with skimping on testing.
 
@@ -106,7 +106,7 @@ them.
 
 ### Complexity
 
-After all that negativity, I'd like to point out that Ember has been doing a
+After all this negativity, I'd like to point out that Ember has been doing a
 bang-up job managing our app's complexity.
 
 We've been able to subdivide and nest views like crazy, without ever having to
@@ -129,7 +129,8 @@ between developers. I firmly believe that this is unsustainable.
 So in a typical scenario, you'll have to get all the Rails developers on your
 team up and running with Ember.
 
-I've found the following strategies useful for this:
+As the resident Ember person, I've found the following strategies useful for
+this:
 
 * Go ahead and set up an application skeleton with Ember, so developers can
   look at existing code.
@@ -146,16 +147,20 @@ time was clearly insufficient. As I mentioned above, there is no ready-made
 JavaScript testing environment for Ember yet. As a result, I found myself
 spending several days (a) setting up a testing environment with Konacha (to be
 blogged about another time), and (b) improving Konacha itself so it would be
-more straightforward to use for my teammates. Our contributions to Konacha as
-part of our development brings me to another point:
+more straightforward to use for my teammates. Our contributions to Konacha
+brings me to another point:
 
 The entire JavaScript ecosystem is still in the early stages, so you may often
 find yourself having to fix or improve things in the FOSS libraries that you
-use. You clearly want to contribute these improvements back, to avoid having
-to maintain your own patches on top of the upstream. For this to work, it is
-crucial that your corporate culture is open-source friendly, both in terms of
-IP, and in terms of recognizing the value of time spent working on open
-source. For instance, Funding Gates has been paying me to hack on Ember,
+use. You'll clearly want to contribute these improvements back, to avoid
+having to maintain your own patches on top of the upstream. For this to work,
+it is crucial that your corporate culture is open-source friendly, both in
+terms of IP, and in terms of recognizing the value of time spent working on
+open source. For instance, Funding Gates has been paying me to hack on Ember,
 Konacha, and Capybara. (Radium Software, another heavy Ember user, have been
 doing something similar with their Iridium project.) In a hermetically sealed
 enterprise environment, Ember might not make you happy.
+
+## Conclusions
+
+Read the tl;dr at the top. ;-)
