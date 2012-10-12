@@ -10,7 +10,7 @@ categories:
   <a href="http://willnet.in/24">日本語版</a>
 </div>
 
-*by [Jo Liss](http://www.solitr.com/blog/) (follow [@jo_liss](https://twitter.com/jo_liss))*
+*by [Jo Liss](http://www.solitr.com/blog/) ([@jo_liss](https://twitter.com/jo_liss))*
 
 The Capybara 2.0.0 beta is out. I'll walk you through the most important changes,
 and show you how to upgrade.
@@ -154,9 +154,3 @@ open an issue in the
 Jonas and I are monitoring both.
 
 Even better, send a pull request! We'll love you for it.
-
--------------------
-
-**P.S.** This is the brand new community blog by the developer team at Funding
-Gates. We'll be posting more cool stuff. Be sure to subscribe to our
-[feed](http://techblog.fundinggates.com/atom.xml)!

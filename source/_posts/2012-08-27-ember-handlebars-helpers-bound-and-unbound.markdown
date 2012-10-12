@@ -6,7 +6,7 @@ comments: true
 categories:
 ---
 
-*by [Jo Liss](http://www.solitr.com/blog/) (follow [@jo_liss](https://twitter.com/jo_liss))*
+*by [Jo Liss](http://www.solitr.com/blog/) ([@jo_liss](https://twitter.com/jo_liss))*
 
 Ember has a number of [built-in Handlebars
 helpers](http://docs.edge.emberjs.com/symbols/Handlebars.helpers.html), like
@@ -132,8 +132,3 @@ App.registerViewHelper('capitalize', inlineFormatter(function(content) {
   return content.charAt(0).toUpperCase() + content.slice(1);
 }));
 ```
-
----------------------
-
-P.S. Did we mention that this is our new community blog and you should totally
-subscribe to our [feed](http://techblog.fundinggates.com/atom.xml)? ;-)
