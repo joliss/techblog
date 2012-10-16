@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Scaling Ember.js: Stumbling Blocks with Larger Applications"
+title: "Thoughts on Moving Ember.js Forward"
 date: 2012-10-17 11:00
 comments: true
 categories:
@@ -9,10 +9,13 @@ categories:
 *by [Jo Liss](http://www.solitr.com/blog/) ([@jo_liss](https://twitter.com/jo_liss))*
 
 In this post, I'll talk about the technical challenges we've encountered as
-we've used Ember for a medium-sized project. The target audience is other
-developers that are interested in moving the Ember.js project forward. The
-post is mostly intended as a conversation starter. My hope is that through
-discussion and code, we will be in a better place a few months from now.
+we've used Ember for a medium-sized project, as compared to the smaller apps
+I'd written before.
+
+The target audience is other developers that are interested in moving the
+Ember.js project forward. The post is mostly intended as a conversation
+starter. My hope is that through discussion and code, we will be in a better
+place a few months from now.
 
 **Note 1:** If you are just trying to decide on a framework for your app, then
 after our experiences, I can wholeheartedly recommend Ember. I'll blog about
