@@ -58,6 +58,10 @@ I think we need several pieces to solve this puzzle:
   This might be a couple notches too ambitious, but maybe a "light" version of
   this will go a long way.
 
+  Apparently the [Illuminations](http://www.illuminations-for-developers.com/)
+  addon does something like this, just not for Ember (yet?). Thanks to
+  [@wagenet](https://twitter.com/wagenet) for the pointer!
+
 ## 2. Testing
 
 In my smaller Ember apps, I was able to get by with Selenium, but this is too
