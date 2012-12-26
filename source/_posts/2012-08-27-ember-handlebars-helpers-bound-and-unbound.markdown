@@ -47,6 +47,9 @@ Helper options can be accessed through `options.hash`, e.g.
 
 ## Bound Helpers
 
+*Update: There is now support for bound Handlebars helpers in Ember master
+([46469837](https://github.com/emberjs/ember.js/commit/46469831e7fe22d43b5dcfdf7ff60bd7000aa9de)).*
+
 If you find yourself writing `get` in a helper function without some sort of
 binding, something is going wrong. Using `get` assumes that the data you are
 get'ting is available before the helper is run. Even if it happens to work now,
