@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>http://techblog.fundinggates.com/blog/2012/08/capybara-2-0-upgrade-guide/</loc>
+        <lastmod>2013-03-14T20:11:24-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://techblog.fundinggates.com/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/
+        </loc>
+        <lastmod>2013-03-14T20:11:24-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/</loc>
+        <lastmod>2013-03-14T20:11:24-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/</loc>
+        <lastmod>2013-03-14T20:11:24-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://techblog.fundinggates.com/blog/2013/03/getting-openid-working-on-heroku/</loc>
+        <lastmod>2013-03-14T20:46:37-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://techblog.fundinggates.com/blog/archives/</loc>
+        <lastmod>2013-03-14T20:46:37-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://techblog.fundinggates.com/</loc>
+        <lastmod>2013-03-14T20:46:37-04:00</lastmod>
+    </url>
+</urlset>

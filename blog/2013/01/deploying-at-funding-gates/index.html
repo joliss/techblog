@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Deploying at Funding Gates</title>
+  <meta name="author" content="Funding Gates">
+
+  
+  <meta name="description" content="by Matt Rogish (@MattRogish) Deploying, it seems, is hard. Folks have written very complex mechanisms to
+maintain different releases and branches: &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Funding Gates" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23723423-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Funding Gates</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:techblog.fundinggates.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Deploying at Funding Gates</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-02T17:10:00-05:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
+
+<p>Deploying, it seems, is hard. Folks have written very complex mechanisms to
+maintain different <a href="http://nvie.com/posts/a-successful-git-branching-model/">releases and branches</a>:</p>
+
+<p><img class="center" src="/images/deploying/gitflow.png"></p>
+
+<p>Wow! That seems like a lot of work. You need to keep track of releases, hotfixes,
+and make sure that any last-minute work is propogated to all the relevant branches.</p>
+
+<p>This feels very <a href="http://www.rendell.org/pebble/software/2010/02/09/1265756844985.html">un-agile</a> and not very lean.
+Moreover, it requires a gatekeeper (or more!) who decide if/when a release is to go out,
+appropriate documentation (here&#8217;s version 1.x release notes), and individual developers
+scrambling to get feature X or bug Y into the current release.</p>
+
+<p>That&#8217;s a lot of headaches! Luckily, we&#8217;re working on web application software
+so we don&#8217;t have to worry about cutting releases and delivering them to end-users.
+Press a button and everyone gets the new feature!</p>
+
+<p>As we&#8217;re optimizing for cycle time (how long it takes for a feature to hit production
+after starting) any hand-offs or waiting introduces costly delays. Code that has
+been written that is not deployed to users is <a href="http://www.joelonsoftware.com/items/2012/07/09.html">wasteful undelivered inventory</a>.</p>
+
+<h3>Process</h3>
+
+<ol>
+<li>Developer works on feature</li>
+<li>Developer commits and pushes to master</li>
+<li><a href="http://www.circleci.com">The system</a> automatically deploys to production</li>
+</ol>
+
+
+<p><img class="center" src="/images/deploying/ABC.jpg"></p>
+
+<p>There is no next step. That&#8217;s too simple, right? Right. There are some pre-requisites
+that make this possible:</p>
+
+<ul>
+<li>We require high unit and functional test coverage to ensure nothing gets broken.</li>
+<li>At every push to a remote branch, a Continous Integration server runs and rejects a build
+if a test fails, notifying the entire team of the failure.</li>
+<li>Instead of working on long-running feature branches, we prefer to work with short running
+local branches or directly on master (up to each developer to decide)</li>
+<li>All features that aren&#8217;t &#8220;ready&#8221; (either not finished yet or not ready for &#8220;marketing&#8221; purposes) are
+disabled via feature flags on staging/production.</li>
+<li>Features we&#8217;re currently working on are enabled in development and QA/test</li>
+<li>Any server errors are immediately delivered to the team chat/email and we have other
+monitoring systems in place that would identify &#8220;something bad&#8221; happening in production</li>
+</ul>
+
+
+<h3>Benefits</h3>
+
+<p>This gives us the ability to work on master, have master always deployable,
+and be confident that code that isn&#8217;t ready for public consumption won&#8217;t appear.
+Someone identifies a bug? I can add a test to catch it, fix it, and have it deployed
+to production within minutes - all without needing to get permission from anyone
+or perform git gymnastics.</p>
+
+<p>Deployment is now a non-issue. No one needs to be &#8220;taught&#8221; how to do it. There
+isn&#8217;t even a button that needs pressed.</p>
+
+<p>Continuous deployment isn&#8217;t crazy, and it absolutely scales with larger teams.
+Plenty of big companies like <a href="https://github.com/blog/1241-deploying-at-github">Github</a>,
+<a href="http://codeascraft.etsy.com/2010/05/20/quantum-of-deployment/">Etsy</a>, and the
+poster-child, <a href="http://timothyfitz.com/2009/02/10/continuous-deployment-at-imvu-doing-the-impossible-fifty-times-a-day/">IMVU</a>
+are probably delivering as you read this.</p>
+
+<p>You can add <a href="http://www.fundinggates.com">Funding Gates</a> to that list!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Funding Gates</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-02T17:10:00-05:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/" data-via="" data-counturl="http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/moving-emberjs-forward/" title="Previous Post: Thoughts on Moving Ember.js Forward">&laquo; Thoughts on Moving Ember.js Forward</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/getting-openid-working-on-heroku/" title="Next Post: Getting OpenID working on Heroku">Getting OpenID working on Heroku &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Us</h1>
+
+  <p>We are <a href="http://www.fundinggates.com/">Funding Gates</a>. We make
+  web apps for small businesses. This is our community blog.</p>
+
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/getting-openid-working-on-heroku/">Getting OpenID working on Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/deploying-at-funding-gates/">Deploying at Funding Gates</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/moving-emberjs-forward/">Thoughts on Moving Ember.js Forward</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/">Ember Handlebars Helpers, Bound and Unbound</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/capybara-2-0-upgrade-guide/">Capybara 2.0 Upgrade Guide</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Funding Gates -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'fgtechblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/';
+        var disqus_url = 'http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

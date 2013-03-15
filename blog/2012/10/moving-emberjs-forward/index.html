@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Thoughts on Moving Ember.js Forward</title>
+  <meta name="author" content="Funding Gates">
+
+  
+  <meta name="description" content="by Jo Liss (@jo_liss) In this post, I&#8217;ll talk about the technical challenges we&#8217;ve encountered as
+we&#8217;ve used Ember for a medium- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Funding Gates" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23723423-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Funding Gates</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:techblog.fundinggates.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Thoughts on Moving Ember.js Forward</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-17T11:00:00-04:00" pubdate data-updated="true">Oct 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>by <a href="http://www.solitr.com/blog/">Jo Liss</a> (<a href="https://twitter.com/jo_liss">@jo_liss</a>)</em></p>
+
+<p>In this post, I&#8217;ll talk about the technical challenges we&#8217;ve encountered as
+we&#8217;ve used Ember for a medium-sized project, as compared to the smaller apps
+I&#8217;d written before.</p>
+
+<p>The target audience is other developers that are interested in moving the
+Ember.js project forward. The post is mostly intended as a conversation
+starter. My hope is that through discussion and code, we will be in a better
+place a few months from now.</p>
+
+<p><strong>Note 1:</strong> If you are just trying to decide on a framework for your app, then
+after our experiences, I can wholeheartedly recommend Ember. I&#8217;ll blog about
+framework choices some other time. In the meantime, check out <a href="https://vimeo.com/49434697">Peter&#8217;s
+talk</a>.</p>
+
+<p><strong>Note 2:</strong> I believe that the problems I describe tend to arise with other
+frameworks, like Angular or Backbone, as well. (Backbone in particular doesn&#8217;t
+even try to address many of these things.) If you have seen or come up with
+solutions for other frameworks, please share them!</p>
+
+<h2>1. Debugging and Inspectability</h2>
+
+<p>This is a surprising issue, so I&#8217;ll start with this one.</p>
+
+<p>Ember has great top-down <a href="http://emberjs.com/documentation/">documentation</a>.
+However, as my team-mates dove into our Ember app, one complaint was this: The
+documentation gives simple, self-contained examples. Dropping from
+<code>president.get('fullName')</code> into a fully-featured Ember app is pretty brutal.
+It&#8217;s very hard to know what&#8217;s actually going on.</p>
+
+<p>Unfortunately, Ember doesn&#8217;t make it very easy to inspect app state (check out
+<a href="https://gist.github.com/3901862">this gist</a> for a demonstration).</p>
+
+<p>I think we need several pieces to solve this puzzle:</p>
+
+<ul>
+<li><p>Integration with Web Inspector and Firebug: When showing Ember objects, Firebug
+exposes the type (through <code>toString</code>), but not the properties. Chrome doesn&#8217;t
+even show the type &#8211; just a generic <code>▶ Class</code>.</p>
+
+<p>I&#8217;m guessing that we&#8217;ll need a &#8220;list all properties&#8221; function. Ember should
+already have all the necessary infrastructure for this (<code>Ember.meta</code>, etc.).
+Secondly, I wonder if we should link up with the Web Inspector and Firebug
+folks to see if there&#8217;s a way we might be able to get custom UI for
+inspecting Ember objects.</p></li>
+<li><p>I wish it was possible to click into the page to see the view hierarchy.
+I&#8217;m not sure how to implement this, but my pie-in-sky dream is something
+like Firebug&#8217;s DOM tree, except for nested Ember views instead of DOM nodes.
+This might be a couple notches too ambitious, but maybe a &#8220;light&#8221; version of
+this will go a long way.</p>
+
+<p>Apparently the <a href="http://www.illuminations-for-developers.com/">Illuminations</a>
+addon does something like this, just not for Ember (yet?). Thanks to
+<a href="https://twitter.com/wagenet">@wagenet</a> for the pointer!</p></li>
+</ul>
+
+
+<h2>2. Testing</h2>
+
+<p>In my smaller Ember apps, I was able to get by with Selenium, but this is too
+slow for more complex apps.</p>
+
+<p>Client-side testing in JavaScript is the only viable option for a fast and
+reliable test suite, in my opinion. QUnit is old and sturdy, but I personally
+like <a href="https://github.com/jfirebaugh/konacha">Konacha</a> (Mocha for Rails). In
+addition to unit tests, it allows you to run your Ember app in an iframe, and
+then use jQuery to click on links and inspect the DOM. This essentially gives
+you a very fast synchronous client-side integration test.</p>
+
+<p>Ember already brings some helpful things for testing, like the FixtureAdapter
+in ember-data. Still, the whole setup doesn&#8217;t feel very mature to me yet.
+There is no pre-made testing environment set up for you, like with Rails, so
+instead every project ends up with their own test setup at the moment.</p>
+
+<p>So where do we go from here? It seems that there are two big issues:</p>
+
+<ul>
+<li><p>How do we reliably reset an app between tests? I&#8217;m suggesting a solution in
+<a href="https://github.com/emberjs/ember.js/pull/1318">#1318</a> (Application#reset),
+but it seems fraught with issues. I suspect that we may need to come up with
+a better way. Much of the complexity of this problem comes from global
+state, like the App.router object.</p></li>
+<li><p>How do we give people a pre-made working JavaScript test setup, like Rails
+does for the server side? I believe that this would belong in packages like
+ember-rails. For instance, perhaps ember-rails could in the future generate a
+Konacha setup.</p></li>
+</ul>
+
+
+<h3>Test Fixtures</h3>
+
+<p>There is a subtle but painful issue with fixtures for JavaScript tests: As
+long as you are passing down raw database columns (as tends to be the case in
+smaller apps), you can easily define fixtures or factories on the client side.</p>
+
+<p>But if many of the JSON attributes are cooked or computed, you&#8217;ll want your
+fixtures guaranteed to be in sync with what the server generates. We ended up
+defining our fixtures in Ruby, and dumping them out as JSON into a
+<code>fixtures.js</code> file, using a generator rake task. This works OK, but it doesn&#8217;t
+feel very clean.</p>
+
+<p>I think we&#8217;re caught between a rock and a hard place here:</p>
+
+<p>On the one hand, doing all computation on the client side doesn&#8217;t seem
+practical yet. Even if the performance is good enough, at the moment
+JavaScript is still too awful a platform to implement major chunks of logic.
+Compare for instance <a href="https://gist.github.com/3901152">this Ruby method</a> and
+<a href="https://gist.github.com/3901154">the equivalent Ember/CoffeeScript code</a>.</p>
+
+<p>But on the other hand, if you perform computation on the server, it becomes
+harder to test the JavaScript in isolation. Accordingly, you end up resorting
+to workarounds like generated fixture definitions.</p>
+
+<p>I&#8217;d love to hear how other people approach this issue.</p>
+
+<h2>3. DRY Model Definitions</h2>
+
+<p>In smaller projects you can repeat your database columns in the Ember-side
+model definitions. For our more complex app, we found that this doesn&#8217;t scale.
+We ended up going with code generation for the ember-data model definitions,
+generating a schema.js file using a rake task.</p>
+
+<p>I really wish there was a nicer way to get DRY model definitions.</p>
+
+<p>The information for the model definitions needs to come from the server, so
+this cannot be solved in Ember core.</p>
+
+<p>In Rails&#8217;s case, the authoritative source might be the serializer classes used
+by active_model_serializers. Getting that information into the client is
+surprisingly non-trivial: You can&#8217;t dump complete model definitions at
+precompilation time, along the lines of <code>App.Blog = &lt;%=
+BlogSerializer.ember_definition %&gt;;</code>. This is because the type of each
+attribute is stored in the database, and during precompilation, you don&#8217;t
+generally have a database.</p>
+
+<p>I&#8217;m not sure how this will be solved. I <em>do</em> think however that we need a
+real, DRY solution, not just more generators in ember-rails.</p>
+
+<hr />
+
+<p>These are my thoughts so far. As I said, this post was intended as a
+conversation starter. Once we figure out how to approach some of these things,
+you&#8217;ll hopefully see me writing code and not just complaining idly on our
+blog. ;-)</p>
+
+<p>Leave a comment, open an <a href="https://github.com/emberjs/ember.js/issues">issue</a>,
+or find me on the #emberjs channel.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Funding Gates</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-17T11:00:00-04:00" pubdate data-updated="true">Oct 17<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/" data-via="" data-counturl="http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/" title="Previous Post: Ember Handlebars Helpers, Bound and Unbound">&laquo; Ember Handlebars Helpers, Bound and Unbound</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/01/deploying-at-funding-gates/" title="Next Post: Deploying at Funding Gates">Deploying at Funding Gates &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Us</h1>
+
+  <p>We are <a href="http://www.fundinggates.com/">Funding Gates</a>. We make
+  web apps for small businesses. This is our community blog.</p>
+
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/getting-openid-working-on-heroku/">Getting OpenID working on Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/deploying-at-funding-gates/">Deploying at Funding Gates</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/moving-emberjs-forward/">Thoughts on Moving Ember.js Forward</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/">Ember Handlebars Helpers, Bound and Unbound</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/capybara-2-0-upgrade-guide/">Capybara 2.0 Upgrade Guide</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Funding Gates -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'fgtechblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/';
+        var disqus_url = 'http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

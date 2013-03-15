@@ -1,109 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Funding Gates</title>
-  <meta name="author" content="Funding Gates">
-
-  
-  <meta name="description" content="by Matt Rogish (@MattRogish) I just spent the last few days wrestling with OpenID intermittently failing on production, but not test, development, or &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://techblog.fundinggates.com/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Funding Gates" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-23723423-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Funding Gates</a></h1>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:techblog.fundinggates.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Funding Gates]]></title>
+  <link href="http://techblog.fundinggates.com/atom.xml" rel="self"/>
+  <link href="http://techblog.fundinggates.com/"/>
+  <updated>2013-03-14T20:48:23-04:00</updated>
+  <id>http://techblog.fundinggates.com/</id>
+  <author>
+    <name><![CDATA[Funding Gates]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/getting-openid-working-on-heroku/">Getting OpenID Working on Heroku</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2013-03-14T20:13:00-04:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
+  <entry>
+    <title type="html"><![CDATA[Getting OpenID working on Heroku]]></title>
+    <link href="http://techblog.fundinggates.com/blog/2013/03/getting-openid-working-on-heroku/"/>
+    <updated>2013-03-14T20:13:00-04:00</updated>
+    <id>http://techblog.fundinggates.com/blog/2013/03/getting-openid-working-on-heroku</id>
+    <content type="html"><![CDATA[<p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
 
 <p>I just spent the last few days wrestling with OpenID intermittently failing on production, but not test, development, or staging.</p>
 
@@ -166,47 +81,20 @@
 <p><code>OpenID::Store::Filesystem.new('./tmp')</code></p>
 
 <p>This would only work if you use a single <a href="https://devcenter.heroku.com/articles/dynos">dyno</a> as the filesystem is not shared amongst dynos. Stick with memcached!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/deploying-at-funding-gates/">Deploying at Funding Gates</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-02T17:10:00-05:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
+  <entry>
+    <title type="html"><![CDATA[Deploying at Funding Gates]]></title>
+    <link href="http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates/"/>
+    <updated>2013-01-02T17:10:00-05:00</updated>
+    <id>http://techblog.fundinggates.com/blog/2013/01/deploying-at-funding-gates</id>
+    <content type="html"><![CDATA[<p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
 
 <p>Deploying, it seems, is hard. Folks have written very complex mechanisms to
 maintain different <a href="http://nvie.com/posts/a-successful-git-branching-model/">releases and branches</a>:</p>
 
-<p><img class="center" src="/images/deploying/gitflow.png"></p>
+<p><img class="center" src="http://techblog.fundinggates.com/images/deploying/gitflow.png"></p>
 
 <p>Wow! That seems like a lot of work. You need to keep track of releases, hotfixes,
 and make sure that any last-minute work is propogated to all the relevant branches.</p>
@@ -233,7 +121,7 @@ been written that is not deployed to users is <a href="http://www.joelonsoftware
 </ol>
 
 
-<p><img class="center" src="/images/deploying/ABC.jpg"></p>
+<p><img class="center" src="http://techblog.fundinggates.com/images/deploying/ABC.jpg"></p>
 
 <p>There is no next step. That&#8217;s too simple, right? Right. There are some pre-requisites
 that make this possible:</p>
@@ -270,42 +158,15 @@ poster-child, <a href="http://timothyfitz.com/2009/02/10/continuous-deployment-a
 are probably delivering as you read this.</p>
 
 <p>You can add <a href="http://www.fundinggates.com">Funding Gates</a> to that list!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/moving-emberjs-forward/">Thoughts on Moving Ember.js Forward</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-17T11:00:00-04:00" pubdate data-updated="true">Oct 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>by <a href="http://www.solitr.com/blog/">Jo Liss</a> (<a href="https://twitter.com/jo_liss">@jo_liss</a>)</em></p>
+  <entry>
+    <title type="html"><![CDATA[Thoughts on Moving Ember.js Forward]]></title>
+    <link href="http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/"/>
+    <updated>2012-10-17T11:00:00-04:00</updated>
+    <id>http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward</id>
+    <content type="html"><![CDATA[<p><em>by <a href="http://www.solitr.com/blog/">Jo Liss</a> (<a href="https://twitter.com/jo_liss">@jo_liss</a>)</em></p>
 
 <p>In this post, I&#8217;ll talk about the technical challenges we&#8217;ve encountered as
 we&#8217;ve used Ember for a medium-sized project, as compared to the smaller apps
@@ -453,42 +314,15 @@ blog. ;-)</p>
 
 <p>Leave a comment, open an <a href="https://github.com/emberjs/ember.js/issues">issue</a>,
 or find me on the #emberjs channel.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/">Ember Handlebars Helpers, Bound and Unbound</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-27T11:14:00-04:00" pubdate data-updated="true">Aug 27<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>by <a href="http://www.solitr.com/blog/">Jo Liss</a> (<a href="https://twitter.com/jo_liss">@jo_liss</a>)</em></p>
+  <entry>
+    <title type="html"><![CDATA[Ember Handlebars Helpers, Bound and Unbound]]></title>
+    <link href="http://techblog.fundinggates.com/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/"/>
+    <updated>2012-08-27T11:14:00-04:00</updated>
+    <id>http://techblog.fundinggates.com/blog/2012/08/ember-handlebars-helpers-bound-and-unbound</id>
+    <content type="html"><![CDATA[<p><em>by <a href="http://www.solitr.com/blog/">Jo Liss</a> (<a href="https://twitter.com/jo_liss">@jo_liss</a>)</em></p>
 
 <p>Ember has a number of <a href="http://docs.edge.emberjs.com/symbols/Handlebars.helpers.html">built-in Handlebars
 helpers</a>, like
@@ -661,42 +495,15 @@ helper function to DRY up these kinds of helpers:</p>
 </span><span class='line'><span class="p">}));</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/capybara-2-0-upgrade-guide/">Capybara 2.0 Upgrade Guide</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-22T00:19:00-04:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div style="float: right;">
+  <entry>
+    <title type="html"><![CDATA[Capybara 2.0 Upgrade Guide]]></title>
+    <link href="http://techblog.fundinggates.com/blog/2012/08/capybara-2-0-upgrade-guide/"/>
+    <updated>2012-08-22T00:19:00-04:00</updated>
+    <id>http://techblog.fundinggates.com/blog/2012/08/capybara-2-0-upgrade-guide</id>
+    <content type="html"><![CDATA[<div style="float: right;">
   <a href="http://willnet.in/24">日本語版</a>
 </div>
 
@@ -854,105 +661,7 @@ open an issue in the
 Jonas and I are monitoring both.</p>
 
 <p>Even better, send a pull request! We&#8217;ll love you for it.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>About Us</h1>
-
-  <p>We are <a href="http://www.fundinggates.com/">Funding Gates</a>. We make
-  web apps for small businesses. This is our community blog.</p>
-
-</section>
-<section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2013/03/getting-openid-working-on-heroku/">Getting OpenID working on Heroku</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/deploying-at-funding-gates/">Deploying at Funding Gates</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/moving-emberjs-forward/">Thoughts on Moving Ember.js Forward</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/">Ember Handlebars Helpers, Bound and Unbound</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/capybara-2-0-upgrade-guide/">Capybara 2.0 Upgrade Guide</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Funding Gates -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-<script type="text/javascript">
-      var disqus_shortname = 'fgtechblog';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+</feed>
