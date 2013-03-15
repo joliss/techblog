@@ -2,12 +2,7 @@
 
 ## Setup
 
-    rvm use 1.9.3
-    rvm gemset create 'techblog'
-    cd .
-
-    # It should spit out: "using 1.9.3 with gemset techblog"
-
+    (Make sure to keep the ruby version up to date with Business Portal)
     bundle
 
 Then run:
