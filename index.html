@@ -9,7 +9,8 @@
   <meta name="author" content="Funding Gates">
 
   
-  <meta name="description" content="by Matt Rogish (@MattRogish) I just spent the last few days wrestling with OpenID intermittently failing on production, but not test, development, or &hellip;">
+  <meta name="description" content="by Matt Rogish (@MattRogish) When working with EmberJS in a Rails context, we noticed that keeping
+our Rails and Ember models in sync was a time- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +75,393 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/automatically-generate-ember-models-from-rails-serializers/">Automatically Generate Ember Models From Rails Serializers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T12:54:00-04:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>by <a href="http://www.mattrogish.com/">Matt Rogish</a> (<a href="https://twitter.com/MattRogish">@MattRogish</a>)</em></p>
+
+<p>When working with <a href="http://emberjs.com/">EmberJS</a> in a Rails context, we noticed that keeping
+our Rails and Ember models in sync was a time-consuming and error-prone <a href="http://techblog.fundinggates.com/blog/2012/10/moving-emberjs-forward/">process</a>.</p>
+
+<p>As <a href="https://twitter.com/jo_liss">Jo</a> mentioned:</p>
+
+<blockquote><p>In smaller projects you can repeat your database columns in the Ember-side<br/>model definitions. For our more complex app, we found that this doesn&#8217;t scale.<br/>We ended up going with code generation for the ember-data model definitions,<br/>generating a schema.js file using a rake task.</p></blockquote>
+
+
+<p>I&#8217;ve gotten some requests to expand on that and include some code. Note: this is
+for pre-1.0 Ember so I wouldn&#8217;t go copying-and-pasting this into your project.
+It&#8217;s not likely to work and you&#8217;ll get strange errors. Still, since it&#8217;s not much
+code you could start with this and tweak it based on the latest version of Ember.</p>
+
+<p>Consider the following Rails model, the proverbial &#8220;User&#8221;:</p>
+
+<figure class='code'><figcaption><span>app/models/user.rb  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">attr_accessible</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span><span class="p">,</span> <span class="ss">:phone</span><span class="p">,</span> <span class="ss">:birthdate</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:organization</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">full_name</span>
+</span><span class='line'>    <span class="s2">&quot;</span><span class="si">#{</span><span class="n">first_name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">last_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the associated <a href="https://github.com/rails-api/active_model_serializers">ActiveModelSerializer</a>:</p>
+
+<figure class='code'><figcaption><span>app/serializers/user_serializer.rb  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">UserSerializer</span> <span class="o">&lt;</span> <span class="no">ApplicationSerializer</span>
+</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:organization_id</span>
+</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span><span class="p">,</span> <span class="ss">:phone</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">has_one</span> <span class="ss">:organization</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Computed attributes</span>
+</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:full_name</span><span class="p">,</span> <span class="ss">:ember_birthdate</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">ember_birthdate</span>
+</span><span class='line'>    <span class="n">object</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m/%d/%Y&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In order to consume this data, you&#8217;ll need an Ember model that looks something like this (Coffeescript for brevity):</p>
+
+<figure class='code'><figcaption><span>app/assets/javascripts/ember/models/user.js.coffee  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">App.User = </span><span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span>
+</span><span class='line'>  <span class="nv">email: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">first_name: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">last_name: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">phone: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">full_name: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">ember_birthdate: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;string&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">organization: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s">&#39;App.Organization&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Kind of tedious to write all of that out, to remember to keep it up to date should you add, change, or delete something on the serializer side, and it just feels very un-DRY.
+Why should we have to hand-edit multiple files when we make a change? That&#8217;s why we have convention over configuration!</p>
+
+<p>We created a simple rake task that uses the <a href="http://www.ruby-doc.org/gems/docs/a/active_model_serializers-0.5.2/ActiveModel/Serializer.html#method-c-schema">schema</a>
+capability of ActiveModelSerializers to convert it to JSON, then is processed by
+the compiler to generate the model data.</p>
+
+<p>Note: This may not work with the latest version of AMS.</p>
+
+<p>The rake task is simple (you can shim it on rake db:migrate and elsewhere if you want):</p>
+
+<figure class='code'><figcaption><span>lib/tasks/ember_schema.rake  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">namespace</span> <span class="ss">:db</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">namespace</span> <span class="ss">:schema</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">desc</span> <span class="s1">&#39;Regenerate the Ember schema.js based on the serializers&#39;</span>
+</span><span class='line'>    <span class="n">task</span> <span class="ss">:ember</span> <span class="o">=&gt;</span> <span class="ss">:environment</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">schema_hash</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">eager_load!</span> <span class="c1"># populate descendants</span>
+</span><span class='line'>      <span class="no">ApplicationSerializer</span><span class="o">.</span><span class="n">descendants</span><span class="o">.</span><span class="n">sort_by</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">serializer_class</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">schema</span> <span class="o">=</span> <span class="n">serializer_class</span><span class="o">.</span><span class="n">schema</span>
+</span><span class='line'>        <span class="n">schema_hash</span><span class="o">[</span><span class="n">serializer_class</span><span class="o">.</span><span class="n">model_class</span><span class="o">.</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">schema</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">schema_json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">pretty_generate</span><span class="p">(</span><span class="n">schema_hash</span><span class="p">)</span>
+</span><span class='line'>      <span class="no">File</span><span class="o">.</span><span class="n">open</span> <span class="s1">&#39;app/assets/javascripts/ember/models/schema.js&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;// Model schema, auto-generated from serializers.</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;// This file should be checked in like db/schema.rb.</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;// Check lib/tasks/ember_schema.rake for documentation.</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;window.serializerSchema = </span><span class="si">#{</span><span class="n">schema_json</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that AMS does not include, nor care about, the Rails model validators, so
+you&#8217;ll need to handle that on your own. We wrote a small helper to output a
+few basic validations but since Ember lacks built-in validators, you&#8217;d have
+to write your own validator library.</p>
+
+<p><a href="https://github.com/dockyard/ember-validations">ember-validations</a>
+looks like a great library that supports all current (Rails3) validations.
+You would just need to export the validations as JSON, and then write an appropriate converter.</p>
+
+<p>So, great! We now have the JSON definition for the user:</p>
+
+<figure class='code'><figcaption><span>app/assets/javascripts/ember/models/schema.js  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// Model schema, auto-generated from serializers.</span>
+</span><span class='line'><span class="c1">// This file should be checked in like db/schema.rb.</span>
+</span><span class='line'><span class="c1">// Check lib/tasks/ember_schema.rake for documentation.</span>
+</span><span class='line'><span class="nb">window</span><span class="p">.</span><span class="nx">serializerSchema</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;User&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;attributes&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;organization_id&quot;</span><span class="o">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;email&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;first_name&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;last_name&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;full_name&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;ember_birthdate&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;phone&quot;</span><span class="o">:</span> <span class="s2">&quot;string&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="s2">&quot;associations&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;organizations&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;belongs_to&quot;</span><span class="o">:</span> <span class="s2">&quot;organization&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>How do we get it into Ember?</p>
+
+<figure class='code'><figcaption><span>app/assets/javascripts/ember/models/schema_parser.js.coffee  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="c1">#= require frontend/models/schema</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Check lib/tasks/ember_schema.rake for documentation about the schema.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">dsTypes =</span>
+</span><span class='line'>  <span class="nv">string: </span><span class="s">&#39;string&#39;</span>
+</span><span class='line'>  <span class="nv">text: </span><span class="s">&#39;string&#39;</span>
+</span><span class='line'>  <span class="nv">decimal: </span><span class="s">&#39;number&#39;</span>
+</span><span class='line'>  <span class="nv">integer: </span><span class="s">&#39;number&#39;</span>
+</span><span class='line'>  <span class="nv">boolean: </span><span class="s">&#39;boolean&#39;</span>
+</span><span class='line'>  <span class="nv">date: </span><span class="s">&#39;date&#39;</span>
+</span><span class='line'>  <span class="c1"># There is no time type in ember-data yet</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Define base classes like App.UserBase with attribute and</span>
+</span><span class='line'><span class="c1"># association definitions based on schema data.</span>
+</span><span class='line'><span class="nv">App.defineModelBaseClassesFromSchema = </span><span class="o">-&gt;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="nx">className</span><span class="p">,</span> <span class="nx">schema</span> <span class="k">of</span> <span class="nx">serializerSchema</span>
+</span><span class='line'>    <span class="nv">properties = </span><span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="nx">underscoredAttr</span><span class="p">,</span> <span class="nx">type</span> <span class="k">of</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">attributes</span>
+</span><span class='line'>      <span class="nv">attr = </span><span class="nx">underscoredAttr</span><span class="p">.</span><span class="nx">camelize</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nx">dsTypes</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span><span class="o">?</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nx">attr</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/Id$/</span><span class="p">)</span> <span class="o">and</span> <span class="nx">dsTypes</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;number&#39;</span>
+</span><span class='line'>          <span class="c1"># On the serializer side, we serialize belongs_to relationships as</span>
+</span><span class='line'>          <span class="c1"># integer _id fields, since AMS doesn&#39;t support belongs_to yet, and</span>
+</span><span class='line'>          <span class="c1"># has_one sideloads the association, causing infinite recursion.</span>
+</span><span class='line'>          <span class="c1"># Because of that, we infer a belongsTo relationship when we see _id</span>
+</span><span class='line'>          <span class="c1"># attributes in the schema.</span>
+</span><span class='line'>          <span class="nv">assoc = </span><span class="nx">attr</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/Id$/</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="nx">properties</span><span class="p">[</span><span class="nx">assoc</span><span class="p">]</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s">&#39;App.&#39;</span> <span class="o">+</span> <span class="nx">assoc</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">())</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="nx">properties</span><span class="p">[</span><span class="nx">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="nx">dsTypes</span><span class="p">[</span><span class="nx">type</span><span class="p">])</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="c1"># Ember.required doesn&#39;t quite do what we want it to yet, but maybe it</span>
+</span><span class='line'>        <span class="c1"># will be fixed. https://github.com/emberjs/ember.js/issues/1299</span>
+</span><span class='line'>        <span class="nx">properties</span><span class="p">[</span><span class="nx">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">required</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="nx">assoc</span><span class="p">,</span> <span class="nx">info</span> <span class="k">of</span> <span class="nx">schema</span><span class="p">.</span><span class="nx">associations</span>
+</span><span class='line'>      <span class="nv">assoc = </span><span class="nx">assoc</span><span class="p">.</span><span class="nx">camelize</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nv">tableName = </span><span class="nx">info</span><span class="o">?</span><span class="p">.</span><span class="nx">belongs_to</span>
+</span><span class='line'>        <span class="nx">properties</span><span class="p">[</span><span class="nx">assoc</span><span class="p">]</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s">&#39;App.&#39;</span> <span class="o">+</span> <span class="nx">tableName</span><span class="p">.</span><span class="nx">classify</span><span class="p">().</span><span class="nx">capitalize</span><span class="p">())</span>
+</span><span class='line'>      <span class="k">else</span> <span class="k">if</span> <span class="nv">tableName = </span><span class="nx">info</span><span class="o">?</span><span class="p">.</span><span class="nx">has_many</span>
+</span><span class='line'>        <span class="nx">properties</span><span class="p">[</span><span class="nx">assoc</span><span class="p">]</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s">&#39;App.&#39;</span> <span class="o">+</span> <span class="nx">tableName</span><span class="p">.</span><span class="nx">classify</span><span class="p">().</span><span class="nx">capitalize</span><span class="p">())</span>
+</span><span class='line'>      <span class="k">else</span> <span class="k">if</span> <span class="nv">tableName = </span><span class="nx">info</span><span class="o">?</span><span class="p">.</span><span class="nx">has_one</span>
+</span><span class='line'>        <span class="nx">properties</span><span class="p">[</span><span class="nx">assoc</span><span class="p">]</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s">&#39;App.&#39;</span> <span class="o">+</span> <span class="nx">tableName</span><span class="p">.</span><span class="nx">classify</span><span class="p">().</span><span class="nx">capitalize</span><span class="p">())</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Do validator stuff here, if you so desire</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">App</span><span class="p">[</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">className</span><span class="si">}</span><span class="s">Base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">properties</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create the Ember model definition as above, except with a &#8220;Base&#8221; suffix (<code>UserBase</code>).
+You can then extend it with Ember-only attributes:</p>
+
+<figure class='code'><figcaption><span>app/assets/javascripts/ember/models/definitions.js.coffee  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="c1">#= require frontend/models/schema_parser</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">App.Model = </span><span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Define base classes like App.UserBase based on the schema, which in</span>
+</span><span class='line'><span class="c1"># turn is generated based on the serializers. Below, we only add server-side</span>
+</span><span class='line'><span class="c1"># associations, because the schema has their types as</span>
+</span><span class='line'><span class="c1"># `null`, as well as client-side computed properties.</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Check lib/tasks/ember_schema.rake for more documentation about the schema.</span>
+</span><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">defineModelBaseClassesFromSchema</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">App.User = </span><span class="nx">App</span><span class="p">.</span><span class="nx">UserBase</span><span class="p">.</span><span class="nx">extend</span>
+</span><span class='line'>  <span class="nv">syncing: </span><span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s">&#39;boolean&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">hasOrganizationBinding: </span><span class="s">&#39;organization.length&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&#8217;s it. Now your models will be autogenerated and you
+only have to worry about anything not included in the schema!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -881,6 +1269,10 @@ Jonas and I are monitoring both.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/03/automatically-generate-ember-models-from-rails-serializers/">Automatically Generate Ember Models from Rails Serializers</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/03/getting-openid-working-on-heroku/">Getting OpenID working on Heroku</a>
       </li>
     
@@ -894,10 +1286,6 @@ Jonas and I are monitoring both.</p>
     
       <li class="post">
         <a href="/blog/2012/08/ember-handlebars-helpers-bound-and-unbound/">Ember Handlebars Helpers, Bound and Unbound</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/capybara-2-0-upgrade-guide/">Capybara 2.0 Upgrade Guide</a>
       </li>
     
   </ul>
